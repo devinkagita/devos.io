@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <title>Weather</title>
+    <style>
+        body {
+            background-color: black;
+            margin-left: 0px;
+        }
+        .container {
+            display: block;
+            background-color: #1E90FF;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: black;
+        }
+        .input-group {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .result {
+            margin-top: 20px;
+        }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Memeriksa Cuaca</h1>
+            </div>
+        </div> 
+
+        <div class="row mt-2">
+            <div class="col-md-8">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control input-keyword" placeholder="Masukkan Daerah" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <button class="btn btn-primary" type="button" id="button-addon2">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5 result">        
+    </div>
+
+    <div id="cuacaContent" style="display: none;">
+        <!-- Your cuaca content goes here -->
+        <button id="backButton">Back</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script>
+        const searchButton = document.querySelector('#button-addon2');
+        const inputKeyword = document.querySelector('.input-keyword');
+        document.body.style.backgroundImage = 'url(img/sky.jpg)'
+
+        searchButton.addEventListener('click', function() {
+
+            fetch("https://api.openweathermap.org/data/2.5/weather?q="+inputKeyword.value+"&appid=1fe5f03e8b679377cbc41601289edfdd&units=metric")
+                .then(response => response.json())
+                .then(response => {
+                    let result = document.querySelector('.result')
+
+                    result.innerHTML = `<h2 style="margin-bottom: 15px;">${response.name}, ${response.sys.country}</h2>
+                                        <h5><span class="temp">${response.main.temp}°С</span> <span class="temp">${response.weather[0].description}</span></h5>
+                                        <p style="margin-bottom: 17px;">Suhu dari ${response.main.temp_min}°С sampai ${response.main.temp_max}°С</p>
+                                        <h5>Kecepatan Angin : ${response.wind.speed} m/s</h5>
+                                        <h5 style="margin-bottom: 17px;">Awan : ${response.clouds.all}%</h5>
+                                        <h4 style="color: #012443;">Koordinat Geografis : [${response.coord.lat}, ${response.coord.lon}]</h4>` 
+                })
+            inputKeyword.value = null;
+
+        })
+
+        backButton.addEventListener("click", function () {
+                // Hide cuaca content and show other content
+                head.style.display = "inline-block";
+                tanggal.style.display = "inline-block";
+                waktu.style.display = "inline-block";
+                cuacaContent.style.display = "none";
+            });
+    </script>
+  </body>
+</html>

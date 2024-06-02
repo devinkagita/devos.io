@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera</title>
+    <style>
+        body {
+        background-image: url('img/bg.png');
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        flex-direction: column;
+    }
+
+    #cameraContainer {
+        position: relative;
+        width: 80%; /* Increase the width of the camera container */
+        max-width: 800px; /* Set a maximum width for larger screens */
+        overflow: hidden;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        margin-bottom: 20px; /* Increase the margin */
+    }
+
+    #cameraPreview,
+    #photoCanvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 6px; /* Add border-radius for a rounded appearance */
+    }
+
+    #photoCanvas {
+        display: none;
+    }
+
+    #buttonContainer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 15px; /* Increase the padding for better spacing */
+        background-color: rgba(0, 0, 0, 0.7); /* Adjust the background color transparency */
+    }
+
+    button {
+        padding: 10px; /* Increase button padding */
+        font-size: 18px; /* Increase font size */
+        cursor: pointer;
+        background-color: #3498e3; /* Change button color */
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #2073af; /* Darker color on hover */
+    }
+
+    .save-btn,
+    .back-btn {
+        margin-top: 15px; /* Adjust margin for Save and Back buttons */
+    }
+    </style>
+</head>
+
+<body>
+    <div id="cameraContainer">
+        <video id="cameraPreview" autoplay playsinline></video>
+        <canvas id="photoCanvas"></canvas>
+        <div id="buttonContainer">
+            <button onclick="capturePhoto()">Capture Photo</button>
+            <button class="save-btn" onclick="saveMedia()">Save</button>
+            <button class="back-btn" onclick="backToCamera()">Back to Camera</button>
+        </div>
+    </div>
+
+    <script>
+        let stream, mediaRecorder, recordedChunks = [];
+        let isRecording = false;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const video = document.getElementById("cameraPreview");
+            const photoCanvas = document.getElementById("photoCanvas");
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (videoStream) {
+                        video.srcObject = videoStream;
+                        stream = videoStream;
+                    })
+                    .catch(function (error) {
+                        console.error("Error accessing the camera: ", error);
+                    });
+            } else {
+                console.error("getUserMedia is not supported");
+            }
+        });
+
+        function capturePhoto() {
+            const video = document.getElementById("cameraPreview");
+            const photoCanvas = document.getElementById("photoCanvas");
+            const context = photoCanvas.getContext("2d");
+
+            photoCanvas.width = video.videoWidth;
+            photoCanvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, photoCanvas.width, photoCanvas.height);
+
+            photoCanvas.style.display = "block";
+            video.style.display = "none";
+            isRecording = false;
+        }
+
+        function saveMedia() {
+            const canvas = document.getElementById("photoCanvas");
+            const video = document.getElementById("cameraPreview");
+
+            if (canvas.style.display === "block") {
+                const photoURL = canvas.toDataURL("image/png");
+                const link = document.createElement("a");
+                link.href = photoURL;
+                link.download = "captured_photo.png";
+                link.click();
+            } else {
+                const videoURL = video.src;
+                const link = document.createElement("a");
+                link.href = videoURL;
+                link.download = "recorded_video.webm";
+                link.click();
+            }
+        }
+
+        function backToCamera() {
+            const video = document.getElementById("cameraPreview");
+            const photoCanvas = document.getElementById("photoCanvas");
+
+            video.style.display = "block";
+            photoCanvas.style.display = "none";
+        }
+    </script>
+</body>
+
+</html>
